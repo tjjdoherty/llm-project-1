@@ -19,9 +19,23 @@ LLM Project for Document Summarization
 
 ### Sources for discussion:
 
-Article 1: [A very Long Discussion of Legal Document Summarization using LLMs](https://www.linkedin.com/pulse/very-long-discussion-legal-document-summarization-using-leonard-park/)
+Article 1: [A very Long Discussion of Legal Document Summarization using LLMs (Aug 2023)](https://www.linkedin.com/pulse/very-long-discussion-legal-document-summarization-using-leonard-park/)
 Key Takeaways
-- **Large Documents are hard to summarize due to Context Length Limitation**. There are **limited token inputs** for most models, and these are how the model operate, most are around 4.1k - 16.4k (depending on model, as of August 2023 writing of this article) which is about 6 - 26 pages of text. If the input document creates more tokens that the model limit allows, then sections need to be removed before the model can process it.
+- **Large Documents are hard to summarize due to Context Length Limitation**. There are **limited token inputs** for most models, and these are how the model operate, most are around 4.1k - 16.4k (depending on model, as of August 2023 writing of this article) which is about 6 - 26 pages of text. If the input document creates more tokens that the model limit allows, then sections need to be removed before the model can process it. 
+    - This is referred to at the **context** by some, e.g. **8k context** or 4k context.
+    - Some models have much larger limits e.g. 32k, Clause v2 has a 100k token limit but it doesn't actually change much for this author.
+
+- **Currently, all model performance degrades as the amount of text you provide to them increases**.
+    - This is **Particularly true in the middle of the text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models". So optimal performance in current models meant moderating the input to the model with each API call.
+    - See image below, where GPT 3.5 and Claude 1.3 9k and 100k both degrade nearly identically. See images below.
+    - Retrieval of information is better in the beginning and end of the context window.
+    - A really noticeable trend here is that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
+
+    ![Accuracy vs Number of Documents in Input Context, by Model](image.png)
+    ![Document position vs Accuracy of answer retrieval](image-1.png)
+
+- **LLMs struggle with domain specificity and are "reality agnostic"**.
+    - Great for general knowledge and some reasoning.
 
 
 
