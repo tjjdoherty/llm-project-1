@@ -121,10 +121,49 @@ Key Takeaways:
 
 ### Article 3: [Unlocking Legal Insights (OpenAI's LLM and LangChain)](https://www.velotio.com/engineering-blog/unlocking-legal-insights-effortless-document-summarization-with-openais-llm-and-langchain#:~:text=For%20each%20document%2C%20we%20employ,translating%20legalese%20into%20understandable%20insights.)
 
+
+
+- **What is LangChain?** A framework to simplify and enhance development of applications that involve NLP and LLMs, works with GPT-3 and 4.
+    - Features: Modular NLP workflow; Chain-based Processing; Scalability with large datasets and tasks, integrations & version control; data viz etc
+    - Guide on OpenAI API key generation
+    - Google Colab - set up there for free GPU support
+
+
 ### Article 4: [2024 source - Less is More for Long Document Summary Evaluation by LLMs](https://aclanthology.org/2024.eacl-short.29.pdf)
 
+The paper focuses on whether the evaluation of summaries produced by LLMs and experts are aligned. Ideally, LLMs and experts would provide similar evaluations of summaries of long documents, and this would be evidence LLMs could be deployed for the task.
+- **Lost in the Middle problem still an issue, so Extract-then-Evaluate instead**
+    - Extract key sentences from a long source doc, evaluate the summary by prompting LLMs.
+    - **Results: Significantly reduced evaluation costs and greater correlation with human evaluations.**
+    - Recommendations for optimal document length and sentence extraction methods.
+    ![Extract then Evaluate](image-2.png)
 
-ChatGPT "What are some of the limitations of large document summariser tools built by LLMs?"
+- **Method for Extract then Evaluate**:
+    - Summary of E-t-E: 
+        - Step 1: Extract importance sentences from a long source document (matching and model-based approaches LEAD, ROUGE, BERTScore, and NLI), concatenating them until the extracted document reaches a predefined length. 
+        - Step 2: evaluate the summary against the extracted document using LLMs. Data from arXiv, GovReport, PubMed, and SQuALITY datasets (Koh et al., 2022; Krishna et al., 2023).
+    - **Summarisation evaluation:** Assign s^ rating to a **model-generated summary y^** and run corr(s^, s) where s is the human given score, the better the eval metric is. To assign s^, existing work used either reference summary y or input doc x and y^
+    - With LLM Evaluators, previously x and y^ were inputs, where s^ = f(x, y^) but Extract-then-Evaluate has the two step approach outlined above:
+        - Step 1: Extract from x until pre-defined length N is reached, use extracts to compose a short but dense x'.
+        - Step 2: Evaluate y^ using LLMs and design prompts to take x' and y^ as inputs and generate a rating scale s^ = f(g.extract(x), y^)
+    - **Sentence Extraction**: 
+        - LEAD extracts first N tokens from x, good baseline.
+        - ROUGE extracts sentences from x maximizing recall of ROUGE score with y^ until reaching N tokens
+        - BERTScore - Rouge but recall of BERTScore
+        - NLI: Using the model summary y^, NLI extracts from the original doc the sentences that are entailed (supported) or contradicted by those in y^ until it reaches N tokens.
+    - **Evaluation costs**: Calculated the average evaluation cost of using LLMs to investigate the efficiency of the method. How much compute/resources were being used in total?
+    - **GPT 4 used as the evaluator, 8k context**. Truncation of longer documents if they didn't fit.
+
+- **Results**:
+    - LLM mostly showed a significant improvement in correlation with human judgement compared to non LLM baseline (ROUGE-1 F1, BERTScore and BARTScore). But Evaluation costs increased due to larger prompt length
+        - Context: BARTScore is LLM based but BERTScore is not (it isn't generative)
+    - **Extracting info from source then evaluating lowers cost and improves performance**. Potentially avoiding the lost-in-the-middle problem and across different studies, performance increases as document size decreases.
+    - Resourcing: on a limited budget, the approach demonstrated similar performance to the best extraction option while reducing costs by half.
+
+
+### General notes from ChatGPT
+
+Prompt: "What are some of the limitations of large document summariser tools built by LLMs?"
 Summaries:
 - **Token Limitations:** Referred to in Article 1: what is the token limit of the model you're using? It is likely going to lead to a loss of context or information in lengthy documents e.g. business RFPs/Tenders or legal case outcomes. 
     - **Tokenisation rules might have hyperparameters but the rules are often predefined by the model architecture and the training process, so it is not easily tunable post-training**. For example, you couldn't tune the token limit without retraining the model with a larger or different architecture. 
