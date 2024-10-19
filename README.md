@@ -1,12 +1,11 @@
-# llm-project
-LLM Project for Document Summarization
+# llm-project: Document Summarisation
 
-## LLM Project Journal
+## Project Journal
 
 ## Goals
 
-- ### Summarizing lengthy legal documents / decisions into key point summaries
-- ### Summarizing lengthy business RFPs and requirements into key points
+- ### Summarising lengthy legal documents / decisions into key point summaries
+- ### Summarising lengthy business RFPs and requirements into key points
 
 ## General Structure:
 
@@ -17,52 +16,107 @@ LLM Project for Document Summarization
 - Challenge - could it have some generative properties? e.g. "This RFP is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
 
 
-## Sources for discussion:
+## Sources for Research:
 
 ### Article 1: [A very Long Discussion of Legal Document Summarization using LLMs (Aug 2023)](https://www.linkedin.com/pulse/very-long-discussion-legal-document-summarization-using-leonard-park/)
 Key Takeaways:
-- **Large Documents are hard to summarize due to Context Length Limitation**. There are **limited token inputs** for most models, and these are how the model operate, most are around 4.1k - 16.4k (depending on model, as of August 2023), about 6 - 26 pages of text. If the input document creates more tokens that the model limit allows, then sections need to be removed before the model can process it. 
-    - This is referred to at the **context** by some, e.g. **8k context** or 4k context.
-    - Some models have much larger limits e.g. 32k, Clause v2 has a 100k token limit but it doesn't actually change much for this author.
+- **Large Documents are hard to summarise due to Context Length Limitation**. There are **limited token inputs** for most models, and these are how the model operate, most are around 4.1k - 16.4k (depending on model, as of August 2023), about 6 - 26 pages. If the input document creates more tokens that the model limit allows, sections need to be removed before the model can process it. 
+    - This is referred to as the **context**, e.g. **8k or 4k context**.
+    - Some models have much larger limits e.g. 32k, Clause v2 has a 100k token limit but it doesn't actually change performance (see below).
+
 
 - **Currently, all model performance degrades as the amount of text you provide to them increases**.
-    - This is **Particularly true in the middle of the text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models". So optimal performance in current models meant moderating the input to the model with each API call.
+    - This is **Particularly true in the middle of text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models". So optimal performance in current models meant moderating the model input with each API call.
     - See images below: GPT 3.5 and Claude 1.3 9k and 100k both degrade nearly identically. Retrieval of information is better in the beginning and end of the context window.
-    - A really noticeable trend here is that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
+    - It's very noticeable that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical to their 'lightweight' models.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
 
     ![Accuracy vs Number of Documents in Input Context, by Model](image.png)
     ![Document position vs Accuracy of answer retrieval](image-1.png)
 
 - **LLMs struggle with domain specificity and are "reality agnostic"**.
-    - It's just probabilistic prediction of the next word the user is expecting, so when LARGE language model training is likely to come from general purpose sources (the LARGE majority of its training data), it's not reasonable to expect the highest probability output to be for expertise that requires domain specific or interdisciplinary knowledge.
-    - This **can be employed as a strategy in domain-specific uses**. e.g. Patent law - you can't expect a model to produce language to defend your unique patent but you could see the claim language of similar articles, or a generalized version of a claim you might want to distinguish from. In other words, if you are going for uniqueness, use the model as a norm to deviate from. 
+    - E.g. ChatGPT is just probabilistically generating the next word you expect, so when LARGE language model training is likely to come from general purpose sources (the LARGE majority of its training data), it's not reasonable to expect the highest probability output to be for the niche expert view that requires domain specific or interdisciplinary knowledge.
+    - This **can be employed as a strategy in domain-specific uses**. e.g. Patent law - you can't expect a model to produce language to defend your unique patent but you could see the claim language of similar articles, or a generalised version of a claim you might want to distinguish from. In other words, if you are going for uniqueness, use the model as a norm to deviate from. 
+
 
 - **Get Around Context Limits**
     - **Chain Prompting:** Executing many separate prompts in sequence. This breaks up large documents into pieces and iteratively process them using the LLM.
         - E.g. **LangChain "Refine Chain and Map Reduce** LangChain can be buggy and outdated (in Aug 2023) but it introduces key concepts. See Article 3
 
-- **Documents chunked by Chain Summarization**
-    - **Document Chunking Matters**: Remember that between prompts, the Model has no memory!
-    - If you want your model output to reflect some knowledge or contribution across separate generations of your chain prompt, then you need to re-introduce previous information into subsequent API calls, such as the previous model answer being part of the next prompt in Refine Chain, or the “summary of summaries” that re-reviews the intermediate outputs in Map Reduce.
-    - **Spread one idea across separate chunks**: Generally the Chain Summarization techniques divide text into chunks of roughly uniform length at line or sentence breaks. Ideally we get clean breaks in sections/subsections (e.g. the chapters of a book) but that currently just doesn't happen because LLMs aren't well-suited for dividing large docs, because they can't read it all at once. As document chunk length increases you'll quickly lose granularity and detail.
-    - **Sometimes it's bad luck**: If you are studying a general concept found across pages of text spanning more than your chunk size, you'll present the concept in fractured pieces and the model won't comprehend it properly. 'Unlucky document chunking' reduces model performance:
+
+- **Documents chunked by Chain Summarisation**
+    - **Document Chunking Matters**:
+    - The model has no memory between prompts. If you want your model output to reflect some knowledge or contribution across separate generations of your chain prompt, then you need to re-introduce previous information into subsequent API calls, such as the previous model answer being part of the next prompt in Refine Chain, or the “summary of summaries” that re-reviews the intermediate outputs in Map Reduce.
+    - **Spread one idea across separate chunks**: Most Chain Summarisation techniques divide text into chunks of roughly uniform length at line or sentence breaks. Ideally we get clean breaks in sections/subsections (e.g. chapters of a book) but that currently just doesn't happen because LLMs aren't well-suited for dividing large docs, because they can't read it all at once. As document chunk length increases you'll quickly lose granularity and detail.
+    - **Unlucky document chunking**: If you are interested in a general concept found across multiple 'chunks', you'll present the concept to the model in fractured pieces and it won't comprehend it properly. Model performance declines because:
         - "... one or both chunks may be left with insufficient detail, 
         - ...one or both may contain enough information for the model to produce a vague, or incomplete, or incorrect answer. 
         - ...both sections may contain enough information for the model to produce complete, and therefore duplicate answers that are unrepresentative of the original document."
     - All in all, segments between 4k - 6k tokens in length (6 - 9 pages) may be ideal.
     - **Token output limits** you need to specify the token output limit - how small a summary do you want from the input documents?
-        - **Compression Ratio** is the ratio of input token limit / output token summary. **How much are you summarizing this input?**. A low ratio would be preserving a lot of the information in the summary. 20:1 is usually workable for summarization as a starting point. OpenAI models don't have an explicit token limit, but for context tasks they generally don't exceed 2k output.
+        - **Compression Ratio** is the ratio of input token limit / output token summary. **How much are you summarising this input?**. A low ratio would be preserving a lot of the information in the summary. 20:1 is usually workable for summarisation as a starting point. OpenAI models don't have an explicit token limit, but for context tasks they generally don't exceed 2k output.
         - **Context Window**: This is the sum of input and output token limits. It doesn't specify input or output because **it's a measure of token processing capacity of the model**.
 
 - More to Follow...
 
 
-### Article 2: [Legal Summarization through LLMs: The PRODIGIT Project (Aug 2023)](https://arxiv.org/pdf/2308.04416)
+### Article 2: [Legal Summarisation through LLMs: The PRODIGIT Project (Aug 2023)](https://arxiv.org/pdf/2308.04416)
 Key Takeaways:
-- Background NLP: The complexity and density of legal language and "the variety, ambiguity and meaning density" have so far been a key obstacle to the deployment of symbolic AI approaches. "The more such formalisms have tried to reproduce the richness of natural language, the more work-intensive the exercise has become and the more debatable its outcomes". LLMs are a revolution.
-- LLMs used in the PRODIGIT project in Italy, goal of providing support to tax judges and lawyers through digital technology.
+- Background: PRODIGIT is an Italian state project to support tax lawyers and judges with technology. Italy has been digitising its tax system for years, appeals, reviews and judicial decisions happen on a platform. Theres a first instance, second instance and final appeals court. LLMs are being used to summarise decisions and case outcomes.
 
 
+- **The research group used an LLM summariser on a dataset of 1,500 decisions on the Registration and Recordation tax** (a fee to the government for recognising and recording legal transactions & deeds to real estate and other assets). Goal was **could the LLM correctly surmise the fate of the case - 1st court, 2nd court, final court of appeal?**
+    - **Case rulings have a consistent structure:** Intro; Development of Proceedings; Grounds of the Decision; Final Ruling for the model to interpret.
+    - Italian Legal Culture has **two Summary statement types:**
+        - Maxims: Summary of the most important legal principle of the case - highly specialised, related to supreme court setting new legal precedent.
+        - **Abstracts / Triages (selected):** Intended to summarise the case retrieved so the lawyer can decide if the whole case warrants reading. This type of summary was chosen.
+
+
+- **Abstractive and Extractive Summary were both used had complementary advantages:**
+    - Extractive summarisation finds exact sentences from the text without modification, the user can then use this to go directly to the extract's position in the text to get further context. However, that defeats the point of summarisation, leaving the user to go and find the context around the unmodified important sentence, or you need the model to produce large parts of the original text and bloating the summary. 
+    - Abstractive Summarisation can provide short texts that summarise the salient content of a much larger document, when done well. But it can hallucinate generating content that isn't found in the original text.
+
+
+- **NLP Summarisation tools:**
+    - **Latent Semantic Analysis (LSA)** which uses singular value decomposition (SVD) to find relationships between words. Each sentence gets a weight based on its semantic similarity to the rest of the document, greater weight makes the sentence more important and gets included in the summary. The goal is to create summaries with wide coverage of the content without redundancy.
+    - **Lex-Rank** - graph based approach to identify important sentences, node and edge model to find cosine similarity with other sentences
+    - **TextRank** - General purpose graph based ranking algorithm, similar node-edge model but the edges are non-directed (?) and can be weighted for degrees of similarity
+    - **Luhn** - Statistical approach to identify important sentences in a document. Score assigned to each sentence based on important word frequency. Easy to implement and interpet the algorithm.
+    - **NLTK (Natural Language Toolkit)** - similar node and edges model applying a version of the TextRank algorithm. **NLTK summarier is easy to use and can make high quality summaries, but it struggles with complex language and noise** - docs with many filler sentences.
+
+
+- **LLM Tools** - transformers mentioned as a game changer
+    - **IT5** - Italian language transformer model, available on Hugging Face large and small model version.
+    - **GPT3 and 4, no fine tuning** - 'Good results' were obtained without fine-tuning the general GPT4 model and they didnt have an even larger set of tax decisions to train their own GPT off of GPT4. Results only marginally improve over fine tuning.
+
+- **Extractive Summarisation Results**:
+    - **NLP Tools**: All listed above were tried and all unsatisfactory results. In general, lengthy summaries and relevant information was scattered throughout.
+    - **LLM Tools**: They designed a prompt to push generative models to give literal extraction, testing on GPT3 and 4. IT5 was unsatisfactory. Instructions had 3 sections:
+        - Section 1: Define an extractive summary for the model
+        - Section 2: Describe a method to obtain it (e.g. split the text into sentences, assign semantic scores and identify the most relevant sentences)
+        - Section 3: The desired format for the model output. E.g. a list of sentences and associated scores.
+        - Unlike the NLP tools, **GPT constructed the extractive summaries by selecting and combining sentence fragments** which made shorter and more concise summaries!
+
+- **Abstractive Summarisation** - Used IT5 and GPT 3 and 4 for "Flowing Text" and "issues-based" summaries. IT5 seemed unable to follow the prompt instructions
+    - **Flowing text abstractive means no prescribed structure**. Very simple prompt: *Make a summary of the following text within brackets* { ... }
+        - GPT model was very fluid and relevant, good readability and completenessm IT5 less satisfactory.
+    - **Issue-Based Summaries for Lawyers** - This would distinguish the issues and provide separate summary for each of them. This is good for lawyers who need to identify different principles invoked in the ruling and aspects of the case at surface level to decide whether to fully engage. **This type of summary was most desirable to lawyers**.
+        - **GPT 3.5 and 4 Instructions/prompt:**
+            - Formal Requirement output: **question/answer pair**, questions are QD1, ... QDn and answers are PD1, ... PDn which made it **easier to switch between human-readable and json**.
+            - Conceptual Requirement output: Specification of principles, defined as the application/interpretation of an explicit norm, regulation or previous decision.
+            - A question is something answered by means of a principle.
+            - Other prescriptions in the prompt:
+                - Principles must be very different from each other; there are usually only 1 or 2 in a text, any more than this would be found only in very lengthy texts.
+                - **Report the principles explicitly, but state questions generally** without reference to a specific case.
+
+
+- **Results - feedback by legal experts**
+    - 'A clear preference for the outcomes delivered by generative tools, in particular the issue-based summarisation delivered by GPT4'
+
+
+- **Conclusions**
+    - 'The most advanced LLMs without fine-tuning can provide very good results in automated summarisation, clearly outperforming earlier NLP tools'.
+    - 'Different summaries can be obtained by carefully designing the corresponding prompt'.
+    - It's not yet clear how much fine tuning will improve the general models.
 
 
 ### Article 3: [Unlocking Legal Insights (OpenAI's LLM and LangChain)](https://www.velotio.com/engineering-blog/unlocking-legal-insights-effortless-document-summarization-with-openais-llm-and-langchain#:~:text=For%20each%20document%2C%20we%20employ,translating%20legalese%20into%20understandable%20insights.)
@@ -70,20 +124,20 @@ Key Takeaways:
 ### Article 4: [2024 source - Less is More for Long Document Summary Evaluation by LLMs](https://aclanthology.org/2024.eacl-short.29.pdf)
 
 
-ChatGPT "What are some of the limitations of large document summarizer tools built by LLMs?"
+ChatGPT "What are some of the limitations of large document summariser tools built by LLMs?"
 Summaries:
 - **Token Limitations:** Referred to in Article 1: what is the token limit of the model you're using? It is likely going to lead to a loss of context or information in lengthy documents e.g. business RFPs/Tenders or legal case outcomes. 
-    - **Tokenization rules might have hyperparameters but the rules are often predefined by the model architecture and the training process, so it is not easily tunable post-training**. For example, you couldn't tune the token limit without retraining the model with a larger or different architecture. 
-    - **For most pre-built LLMs, tokenization is set in stone unless you build your own tokenizer.**
+    - **Tokenisation rules might have hyperparameters but the rules are often predefined by the model architecture and the training process, so it is not easily tunable post-training**. For example, you couldn't tune the token limit without retraining the model with a larger or different architecture. 
+    - **For most pre-built LLMs, tokenisation is set in stone unless you build your own tokeniser.**
 
 - **Context Truncation:** LLM's typically use a sliding or **rolling window of tokens** to maintain context. **When the token limit is reached, most models simply discard the earliest tokens rather than removing the least frequently found tokens, retaining the tokens closer to where the model is currently generating predictions.** Context is lost from early in the document when it gets to working on later documents. 
     - In some contexts, splitting could be better, but usually the recency of tokens leads to more coherent outputs. The way that an RFP or legal decision document is laid out is often demarcated with sections that specifically deal in detail and preserve information here with one issue before moving on to the next. Human readers know and expect this structure but the model may 'forget' the earlier context when working on later sections. 
     - For this, you could use 'splitting' or generate section-specific summaries or answers before combining them into a broader document summary. **longformer or BigBird are better suited for handling very long documents and incorporate strategies for retaining more distant context** which is critical for such structured documents
 
-- **Abstraction vs. Extractiveness:** LLMs tend to be abstractive summarizers. This means generating new sentences to summarize content rather than extract the important sentences (how would it know which sentences are the most important?). This means summaries can be vague and miss specific important details. 
-    - Summarization may unintentionally prioritize fluency over factuality which distorts messages. See Token Misinterpretation below.
+- **Abstraction vs. Extractiveness:** LLMs tend to be abstractive summarisers. This means generating new sentences to summarise content rather than extract the important sentences (how would it know which sentences are the most important?). This means summaries can be vague and miss specific important details. 
+    - Summarisation may unintentionally prioritise fluency over factuality which distorts messages. See Token Misinterpretation below.
 
-- **Token Misinterpretation:** Misinterpretation of specialized vocabulary and technical terms is a real issue in domain-specific applications. 
+- **Token Misinterpretation:** Misinterpretation of specialised vocabulary and technical terms is a real issue in domain-specific applications. 
     - Legal may be a huge issue - a lawyer reading that **consideration** occurred has a very specific meaning that the layperson gave consideration to an issue does not capture, and the former may have major consequences on the lawyer's decision-making. 
     - Same with the physical sciences - **organic** is a vague term that has been co-opted by health food marketers but has a specific definition in chemistry and a chemist will act on that word differently than a layperson. 
     - This happens because the model has more general training on common language patterns than on rare or technical terms. There are just more instances of the general-purpose and layperson context of the word; **LLMs have been trained on massive amounts of general-purpose text, where common English words and connective phrases appear frequently.**
