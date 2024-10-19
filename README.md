@@ -15,6 +15,24 @@
 - Return key topics
 - Challenge - could it have some generative properties? e.g. "This RFP is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
 
+## Learnings from initial research (Below)
+
+- One of the biggest challenges I will face in document summarisation is the Lost in the Middle problem: Summarisation from middle parts of input documents tends to be worse than from the beginning and end.
+    - This can be remedied by splitting the document into chunks and chaining output prompts from previous chunks into the next (Chain Summarisation). A summary is generated for each chunk and these intermediate summaries are then combined and further summarized, iteratively producing increasingly concise versions of the text. The process "chains" together multiple summarization steps, with each step feeding into the next, ultimately leading to a summary that encapsulates the key points of the entire document.
+    - Segments of 6 to 9 pages in length (4 to 6k token input) is a good starting point. This aligns with lots of models limited token inputs which is about 4 - 16k anyway.
+
+- You'll have to specify a token output limit too - a 20:1 ratio of input to output tokens is a good place to start and models like chatGPT won't usually exceed 2k context token output.
+    - Don't chase a big token limit LLM - the research shows the larger token limit 'upgrade' model degrades nearly identically in performance of its 'junior' sibling and longer documents consistently cause poorer performance.
+
+- Look at the different types of summarisations you could do:
+    - Extractive vs Abstractive
+    - In Abstractive: free form summary or concept/principle based?
+
+- ChatGPT 4 has generally good performance with the right prompt sequence given explicit structures. This is true without fine-tuning or custom GPT training - the added benefit of that appears to be marginal at this time when you trade off the further work needed to train the GPT in a specific domain.
+
+- How do we get these summaries as close to human judged summaries as possible? Extract-then-Evaluate has gotten much better alignment between LLM and human expert evaluation of summaries. Instead of comparing the original document (x) to the model-generated summary of it, you extract key semantically important sentences (x') and compare it to that, which is a lower computational cost as well.
+
+
 
 ## Sources for Research:
 
@@ -120,8 +138,6 @@ Key Takeaways:
 
 
 ### Article 3: [Unlocking Legal Insights (OpenAI's LLM and LangChain)](https://www.velotio.com/engineering-blog/unlocking-legal-insights-effortless-document-summarization-with-openais-llm-and-langchain#:~:text=For%20each%20document%2C%20we%20employ,translating%20legalese%20into%20understandable%20insights.)
-
-
 
 - **What is LangChain?** A framework to simplify and enhance development of applications that involve NLP and LLMs, works with GPT-3 and 4.
     - Features: Modular NLP workflow; Chain-based Processing; Scalability with large datasets and tasks, integrations & version control; data viz etc
