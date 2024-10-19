@@ -20,13 +20,13 @@
 
 ### Article 1: [A very Long Discussion of Legal Document Summarization using LLMs (Aug 2023)](https://www.linkedin.com/pulse/very-long-discussion-legal-document-summarization-using-leonard-park/)
 Key Takeaways:
-- **Large Documents are hard to summarise due to Context Length Limitation**. There are **limited token inputs** for most models, and these are how the model operate, most are around 4.1k - 16.4k (depending on model, as of August 2023), about 6 - 26 pages. If the input document creates more tokens that the model limit allows, sections need to be removed before the model can process it. 
+- **Large Documents are hard to summarise due to Context Length Limitation**. There are **limited token inputs** for most models, most are around 4.1k - 16.4k (depending on model, as of August 2023), about 6 - 26 pages. If the input document creates more tokens that the model limit allows, sections need to be removed before the model can process it. 
     - This is referred to as the **context**, e.g. **8k or 4k context**.
     - Some models have much larger limits e.g. 32k, Clause v2 has a 100k token limit but it doesn't actually change performance (see below).
 
 
 - **Currently, all model performance degrades as the amount of text you provide to them increases**.
-    - This is **Particularly true in the middle of text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models". So optimal performance in current models meant moderating the model input with each API call.
+    - This is **Particularly true in the middle of text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access information in the middle of long contexts, **even for explicitly long-context models**". So optimal performance in current models meant moderating the model input with each API call.
     - See images below: GPT 3.5 and Claude 1.3 9k and 100k both degrade nearly identically. Retrieval of information is better in the beginning and end of the context window.
     - It's very noticeable that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical to their 'lightweight' models.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
 
@@ -45,15 +45,15 @@ Key Takeaways:
 
 - **Documents chunked by Chain Summarisation**
     - **Document Chunking Matters**:
-    - The model has no memory between prompts. If you want your model output to reflect some knowledge or contribution across separate generations of your chain prompt, then you need to re-introduce previous information into subsequent API calls, such as the previous model answer being part of the next prompt in Refine Chain, or the “summary of summaries” that re-reviews the intermediate outputs in Map Reduce.
-    - **Spread one idea across separate chunks**: Most Chain Summarisation techniques divide text into chunks of roughly uniform length at line or sentence breaks. Ideally we get clean breaks in sections/subsections (e.g. chapters of a book) but that currently just doesn't happen because LLMs aren't well-suited for dividing large docs, because they can't read it all at once. As document chunk length increases you'll quickly lose granularity and detail.
-    - **Unlucky document chunking**: If you are interested in a general concept found across multiple 'chunks', you'll present the concept to the model in fractured pieces and it won't comprehend it properly. Model performance declines because:
-        - "... one or both chunks may be left with insufficient detail, 
+    - The model has no memory between prompts. You need to reintroduce information / answers in Refine Chain, or Summary of Summaries in Map reduce in the next API call if you want your model output to reflect some knowledge across multiple prompts.
+    - **Spread one idea across separate chunks**: Most Chain Summarisation techniques divide text into chunks of roughly uniform length at line or sentence breaks. Ideally we get clean breaks in sections/subsections but currently that is difficult. LLMs aren't well-suited for dividing large docs, because they can't read it all at once. Granularity quickly decreases as chunk length increases.
+    - **Unlucky document chunking**: If a concept is found across many chunks the model will have a fractured understanding of it:
+        - "...one or both chunks may be left with insufficient detail
         - ...one or both may contain enough information for the model to produce a vague, or incomplete, or incorrect answer. 
         - ...both sections may contain enough information for the model to produce complete, and therefore duplicate answers that are unrepresentative of the original document."
     - All in all, segments between 4k - 6k tokens in length (6 - 9 pages) may be ideal.
-    - **Token output limits** you need to specify the token output limit - how small a summary do you want from the input documents?
-        - **Compression Ratio** is the ratio of input token limit / output token summary. **How much are you summarising this input?**. A low ratio would be preserving a lot of the information in the summary. 20:1 is usually workable for summarisation as a starting point. OpenAI models don't have an explicit token limit, but for context tasks they generally don't exceed 2k output.
+    - **Token output limits** you need to specify the token output limit - how small a summary do you want?
+        - **Compression Ratio** is the ratio of input token limit / output token summary. **How much are you summarising this input?**. A low ratio preserves lots of info in summary. 20:1 is a starting point. OpenAI models don't have an explicit token limit, but for context tasks they generally don't exceed 2k output.
         - **Context Window**: This is the sum of input and output token limits. It doesn't specify input or output because **it's a measure of token processing capacity of the model**.
 
 - More to Follow...
