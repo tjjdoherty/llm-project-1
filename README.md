@@ -9,9 +9,18 @@
 ## General Structure:
 
 - Provide a text file (maybe later: PDF or text files)
-- Removes stop words
+- Remove stop words; lower casing; preprocessing including lemmatization
 - Create topics; return key topics
 - Challenge - could it have some generative properties? e.g. "This is is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
+
+## Strategy with the Dataset - [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
+
+45,000 records for training, 5.6k for validation (hyperparam tuning) and 5.6k for testing. Fields are the document itself and a summary that was professionaly written by a human editor.
+
+- I uncovered the lost-in-the-middle issue with doc summarisation and that ideal "chunks" of documents using models like GPT4 is about 4 - 6k tokens as input to summarise an input text. **We should aim to get most records into that range for the best results of summarisation.**
+
+- As a later task, once I have my model's generated summary, I will use a Pearson coefficient test to compare it to the expert 'summary' column. That would make the goal of having model-generated summaries as close to the human experts as possible.
+    - See Article below - Extract-then-Evaluate Method!!
 
 ## Learnings from initial research (Below)
 
