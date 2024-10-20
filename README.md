@@ -11,7 +11,9 @@
 - Provide a text file (maybe later: PDF or text files)
 - Remove stop words; lower casing; preprocessing including lemmatization
 - Create topics; return key topics
-- Challenge - could it have some generative properties? e.g. "This is is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
+- Challenge
+    - Pearson coefficient to compare the model-generated summary with the human expert's summary provided by the dataset
+    - Could it have some generative properties? e.g. "This is is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
 
 ## Strategy with the Dataset - [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
 
