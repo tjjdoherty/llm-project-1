@@ -4,24 +4,22 @@
 
 ## Goals
 
-- ### Summarising lengthy legal documents / decisions into key point summaries
-- ### Summarising lengthy business RFPs and requirements into key points
+- ### Summarising News Articles
 
 ## General Structure:
 
-- Provide a word / PDF document or text file
+- Provide a text file (maybe later: PDF or text files)
 - Removes stop words
-- Create topics 
-- Return key topics
-- Challenge - could it have some generative properties? e.g. "This RFP is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
+- Create topics; return key topics
+- Challenge - could it have some generative properties? e.g. "This is is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
 
 ## Learnings from initial research (Below)
 
 - One of the biggest challenges I will face in document summarisation is the Lost in the Middle problem: Summarisation from middle parts of input documents tends to be worse than from the beginning and end.
     - This can be remedied by splitting the document into chunks and chaining output prompts from previous chunks into the next (Chain Summarisation). A summary is generated for each chunk and these intermediate summaries are then combined and further summarized, iteratively producing increasingly concise versions of the text. The process "chains" together multiple summarization steps, with each step feeding into the next, ultimately leading to a summary that encapsulates the key points of the entire document.
-    - Segments of 6 to 9 pages in length (4 to 6k token input) is a good starting point. This aligns with lots of models limited token inputs which is about 4 - 16k anyway.
+    - Segments of 6 to 9 pages in length (4 to 6k token input) is a good starting point. This aligns with lots of models limited token inputs which is about 4 - 16k when using GPT4, which provides good results in a number of similar tasks without taking the time to fine tune the pretrained model.
 
-- You'll have to specify a token output limit too - a 20:1 ratio of input to output tokens is a good place to start and models like chatGPT won't usually exceed 2k context token output.
+- You'll often have to specify a token output limit too - a 20:1 ratio of input to output tokens is a good place to start and models like chatGPT won't usually exceed 2k context token output.
     - Don't chase a big token limit LLM - the research shows the larger token limit 'upgrade' model degrades nearly identically in performance of its 'junior' sibling and longer documents consistently cause poorer performance.
 
 - Look at the different types of summarisations you could do:
