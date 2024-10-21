@@ -4,16 +4,16 @@
 
 ## Goals
 
-- ### Summarising News Articles
+- ### Summarising News Articles: 
+    - ### Given a training set of longer form news reports, use an LLM to produce a summary of the long form
+    - ### Compare the LLM-generated summary to a human expert-provided summary also supplied in the training data
 
 ## General Structure:
 
 - Provide a text file (maybe later: PDF or text files)
 - Remove stop words; lower casing; preprocessing including lemmatization
-- Create topics; return key topics
-- Challenge
-    - Pearson coefficient to compare the model-generated summary with the human expert's summary provided by the dataset
-    - Could it have some generative properties? e.g. "This is is about [Requirements 1 and 2] but [Requirement 3] has [context] which is important, or may be ignored depending on [Challenge 1]"
+- Use as training data on a pretrained model and produce a summary of the news reports
+- Compare the LLM-generated summary of the news report to the human summary provided using Pearson coefficient or other test
 
 ## Strategy with the Dataset - [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
 
@@ -21,8 +21,8 @@
 
 - I uncovered the lost-in-the-middle issue with doc summarisation and that ideal "chunks" of documents using models like GPT4 is about 4 - 6k tokens as input to summarise an input text. **We should aim to get most records into that range for the best results of summarisation.**
 
-- As a later task, once I have my model's generated summary, I will use a Pearson coefficient test to compare it to the expert 'summary' column. That would make the goal of having model-generated summaries as close to the human experts as possible.
-    - See Article below - Extract-then-Evaluate Method!!
+- As a later task, once I have the model's generated summary, I will use a Pearson coefficient test to compare it to the expert 'summary' column. That would make the goal of having model-generated summaries as close to the human experts as possible.
+    - See Article below - Extract-then-Evaluate Method!
 
 ## Learnings from initial research (Below)
 
