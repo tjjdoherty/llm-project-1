@@ -13,7 +13,7 @@
 - Provide a text file (maybe later: PDF or text files)
 - Remove stop words; lower casing; preprocessing including lemmatization
 - Use as training data on a pretrained model and produce a summary of the news reports
-- Compare the LLM-generated summary of the news report to the human summary provided using Pearson coefficient or other test
+- Compare the LLM-generated summary of the news report to the human summary provided using Pearson coefficient or ROUGE Test
 
 ## Strategy with the Dataset - [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
 
