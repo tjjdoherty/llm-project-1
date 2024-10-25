@@ -2,7 +2,7 @@
 
 ## Project Journal
 
-## Goals
+## Project Task
 
 - ### Summarising News Articles: 
     - ### Given a training set of longer form news reports, use an LLM to produce a summary of the long form
@@ -16,7 +16,7 @@
 - Use the dataset as training data on a pretrained model and produce a summary of the news reports
 - Compare the LLM-generated summary of the news report to the human summary provided using ROUGE Test evaluation
 
-## Strategy with the Dataset: [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
+## The Dataset: [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
 
 - 45,000 records for training, 5.6k for validation (hyperparam tuning) and 5.6k for testing. Fields are the document itself and a summary that was professionaly written by a human editor.
     - There is a large linguistic variety in the training documents. Some are pure opinion/gossip news releases, some matter-of-fact official reporting, some travel journalism type casual fare.
@@ -28,9 +28,11 @@
 
 - This is going to be extremely memory/RAM intensive with the full dataset so I did my **first full run with only 25% of the dataset** from Hugging Face.
 
-## Results:
+## The pre-trained Model:
 
-- I trained the T5 model on 25% of the original data from the source linked above. Dynamic padding of the tokenized sentences was done, other than this most settings/parameters were default other than smaller batch size to manage compute / time (also the motive for the reduced dataset)
+- I trained the T5-small model on 25% of the original data from the source linked above. Almost all settings/parameters were default other than smaller batch size to manage compute / time (also the motive for the reduced dataset) to complete a successful run and gather baseline metrics, before we inspected summarisation results and where we could improve.
+
+## Results:
 
 - Over each consecutive Epoch (4 total):
     - Training Loss and Validation Loss gradually declined, with Validation Loss slightly lower than Training
@@ -43,6 +45,16 @@
 - Inference: 
     - Human inspection / Spot checking the model output against reference showed the lost-in-the-middle problem anecdotally - ignoring of entire sentences in middle of an article, focusing on introduction and small context near the end of the text input.
 
+## Hyperparameters:
+
+- Learning rate generally is something we should experiment with, perhaps a lower learning rate would help summarise given the nature of news being highly varied in writing and journalistic style, subject matter and vocabulary the model will come across.
+- Max_length and Min_length. I strongly suspect that larger min_length would force longer than 19 token GEN LEN outputs. This would noticeably improve the ROUGE Score, initially by virtue of the generated summary having more n-grams that could match the reference.
+- Related to length, length_penalty, encouraging longer or shorter outputs.
+
+## Relevant Links:
+
+- My [small-multi-news-model](https://huggingface.co/tjjdoherty/small-multi-news-model)
+- ![model-card](image-3.png)
 
 ## Learnings from initial research: background-research.md for more.
 
