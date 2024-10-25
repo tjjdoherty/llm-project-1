@@ -1,20 +1,23 @@
-# llm-project: Document Summarisation
+# llm-project
 
-## Project Journal
+## Project Task: Summarising News Articles: 
+- ### Given a training set of news reports that vary in style and length, use an LLM (T5-small) to produce a summary of the long form text
+    - I manually preprocessed and tokenized the dataset initially, before learning the document summarisation can be done end to end through an LLM with its own tokenizer needing to be used
+    - I set on the {T5-small (Text-to-Text Transfer Transformer)](https://databasecamp.de/en/ml-blog/t5-model)
+- ### Compare the LLM-generated summary to a human expert-provided summary (the reference summary) by ROUGE Test evaluation
+    - Rouge 1, Rouge2 and RougeL compare individual words, consecutive word pairs and sentence-level similarities.
+- ### Inference with spot-checking specific summaries from the dataset, and new unseen texts from news of the day
+- ### Identify the hyperparameters and parameters we would want to adjust for a second round of fine-tuning, given the results of the first fine tuning with my dataset
 
-## Project Task
-
-- ### Summarising News Articles: 
-    - ### Given a training set of longer form news reports, use an LLM to produce a summary of the long form
-    - ### Compare the LLM-generated summary to a human expert-provided summary also supplied in the training data
-    - ### Inference with spot-checking specific summaries from the dataset, and new unseen texts
-
-## General Structure:
-
-- Provide a text input e.g. News Article or transcript (from a known dataset)
-    - Previous: Remove stop words, lower casing, preprocessing including lemmatization. This is done automatically with LLM's own tokeniser but I also worked this manually in llm_project_1_preprocess
-- Use the dataset as training data on a pretrained model and produce a summary of the news reports
-- Compare the LLM-generated summary of the news report to the human summary provided using ROUGE Test evaluation
+## General Week 22-24 Structure:
+- ### Week 22-23
+    - Decided on text summarisation (possibly legal document, then confirmed to news summarisation for phase 1), online literature review of some papers (see background-research.md).
+    - Found the dataset (link below), practiced tokenization and preprocessing manually using NLP tools (NLTK, remove stopwords etc). Saved preprocessed data
+- ### Week 23-24
+    - Selected T5-small model for GPU/RAM considerations, first run with just 25% of the data, preprocessing from the raw text (I understand that you need to use the LLM's own tokenizer in almost all cases, so my manual preprocessing wouldn't be appropriate here).
+    - Ran the preprocessed, tokenized data in T5-small, interpret ROUGE score results, manually inspect some outputs and inference with new unseen inputs.
+    - Considered hyperparameter changes to improve performance (output min length, prompt engineering the input for the T5, learning rate
+    - Deployment and ethical considerations discussed in the notebook. The main issue IMO is around training on "news articles" which could be anything from matter-of-fact Reuters/BBC "just the facts" or internet forum gossiping about celebrities in controversial news which was found in some of the training data. There is risk of factually incorrect claims about individuals in certain events which could amount to libel.
 
 ## The Dataset: [Alex Fabbri Multi-News, from HuggingFace](https://huggingface.co/datasets/alexfabbri/multi_news)
 
@@ -26,17 +29,19 @@
 - Once we have the model's generated summary, I will use ROUGE evaluation to compare it to the expert 'summary' column. That would make the goal of having model-generated summaries as close to the human experts as possible.
     - See Article below - Extract-then-Evaluate Method For Future phase potentially testing an improvement in the performance.
 
-- This is going to be extremely memory/RAM intensive with the full dataset so I did my **first full run with only 25% of the dataset** from Hugging Face.
+- This is going to be very memory/RAM intensive with the full dataset so I did my **first full run with only 25% of the dataset** from Hugging Face.
 
 ## The pre-trained Model:
 
-- I trained the T5-small model on 25% of the original data from the source linked above. Almost all settings/parameters were default other than smaller batch size to manage compute / time (also the motive for the reduced dataset) to complete a successful run and gather baseline metrics, before we inspected summarisation results and where we could improve.
+- I trained the **T5-small model** on 25% of the original data from the source linked above. I chose T5 as it is built for text-to-text / sequence-to-sequence NLP tasks like summarisation and question answering. The prompt to the LLM can also be easily modified e.g. "Summarise this text:" "Summarise this passage in at least 6 sentences:" or something similar.
+- T5 is said to need sizeable amounts of data for fine-tuning so I will be mindful of this and try 50% of the data for better results next time.
+- Almost all settings/parameters were default other than smaller batch size to manage compute / time (also the motive for the reduced dataset) to complete a successful run and gather baseline metrics, before we inspected summarisation results and where we could improve.
 
-## Results:
+## Results / Performance Metrics:
 
 - Over each consecutive Epoch (4 total):
-    - Training Loss and Validation Loss gradually declined, with Validation Loss slightly lower than Training
-    - ROUGE scores gently increased 
+    - Training Loss (around 2.9) and Validation Loss (around 2.6) gradually declined, with Validation Loss slightly lower than Training
+    - ROUGE scores gently increasing
 
 - ROUGE1 Score around 0.15 in first full training, ROUGE2 around 0.05. These show that the model's summarisations have a 3x better overlap with single words than consecutive word pairs with the reference summary. Model is probably capturing the key information with not much fluency.
 
@@ -47,9 +52,12 @@
 
 ## Hyperparameters:
 
-- Learning rate generally is something we should experiment with, perhaps a lower learning rate would help summarise given the nature of news being highly varied in writing and journalistic style, subject matter and vocabulary the model will come across.
+At this time I have not re-run the fine tuned model with different hyperparameters as I would like time to decide which parameters to change for the next training, but it is very likely I will focus on:
+
+- **Learning rate:** generally is something we should experiment with, perhaps a lower learning rate would help summarise given the nature of news being highly varied in writing and journalistic style, subject matter and vocabulary the model will come across.
 - Max_length and Min_length. I strongly suspect that larger min_length would force longer than 19 token GEN LEN outputs. This would noticeably improve the ROUGE Score, initially by virtue of the generated summary having more n-grams that could match the reference.
 - Related to length, length_penalty, encouraging longer or shorter outputs.
+- **Change the T5 prompt:** At this time I have the prompt simply as "Summarize:" but this prompt could be used to ask for longer summaries which also solves the issue of small GEN LEN which contributes to underwhelming ROUGE scores.
 
 ## Relevant Links:
 
