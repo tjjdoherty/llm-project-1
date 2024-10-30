@@ -12,8 +12,8 @@ Key Takeaways:
     - See images below: GPT 3.5 and Claude 1.3 9k and 100k both degrade nearly identically. Retrieval of information is better in the beginning and end of the context window.
     - It's very noticeable that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical to their 'lightweight' models.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
 
-    ![Accuracy vs Number of Documents in Input Context, by Model](image.png)
-    ![Document position vs Accuracy of answer retrieval](image-1.png)
+    ![Accuracy vs Number of Documents in Input Context, by Model](images/image.png)
+    ![Document position vs Accuracy of answer retrieval](images/image-1.png)
 
 - **LLMs struggle with domain specificity and are "reality agnostic"**.
     - E.g. ChatGPT is just probabilistically generating the next word you expect, so when LARGE language model training is likely to come from general purpose sources (the LARGE majority of its training data), it's not reasonable to expect the highest probability output to be for the niche expert view that requires domain specific or interdisciplinary knowledge.
@@ -119,7 +119,7 @@ The paper focuses on whether the evaluation of summaries produced by LLMs and ex
     - Extract key sentences from a long source doc, evaluate the summary by prompting LLMs.
     - **Results: Significantly reduced evaluation costs and greater correlation with human evaluations.**
     - Recommendations for optimal document length and sentence extraction methods.
-    ![Extract then Evaluate](image-2.png)
+    ![Extract then Evaluate](images/image-2.png)
 
 - **Method for Extract then Evaluate**:
     - Summary of E-t-E: 

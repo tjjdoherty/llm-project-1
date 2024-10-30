@@ -62,7 +62,7 @@ At this time I have not re-run the fine tuned model with different hyperparamete
 ## Relevant Links:
 
 - My [small-multi-news-model](https://huggingface.co/tjjdoherty/small-multi-news-model)
-- ![model-card](image-3.png)
+- ![model-card](images/image-3.png)
 
 ## Learnings from initial research: background-research.md for more.
 
