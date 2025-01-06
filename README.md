@@ -1,5 +1,8 @@
 # llm-project
 
+## Jan 2025 Update
+- This project repo will stay active and once some work on pipelines and deployment is done, I will return to use multiple models in an ensemble method - one LLM for summary generation and another LLM model to compare the summary results.
+
 ## Project Task: Summarising News Articles: 
 - ### Given a training set of news reports that vary in style and length, use an LLM (T5-small) to produce a summary of the long form text
     - I manually preprocessed and tokenized the dataset initially, before learning the document summarisation can be done end to end through an LLM with its own tokenizer needing to be used
