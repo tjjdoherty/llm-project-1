@@ -3,7 +3,7 @@
 ## Project Task: Summarising News Articles: 
 - ### Given a training set of news reports that vary in style and length, use an LLM (T5-small) to produce a summary of the long form text
     - I manually preprocessed and tokenized the dataset initially, before learning the document summarisation can be done end to end through an LLM with its own tokenizer needing to be used
-    - I set on the {T5-small (Text-to-Text Transfer Transformer)](https://databasecamp.de/en/ml-blog/t5-model)
+    - I set on the [T5-small (Text-to-Text Transfer Transformer)](https://databasecamp.de/en/ml-blog/t5-model)
 - ### Compare the LLM-generated summary to a human expert-provided summary (the reference summary) by ROUGE Test evaluation
     - Rouge 1, Rouge2 and RougeL compare individual words, consecutive word pairs and sentence-level similarities.
 - ### Inference with spot-checking specific summaries from the dataset, and new unseen texts from news of the day
