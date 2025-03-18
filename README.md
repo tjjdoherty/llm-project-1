@@ -16,11 +16,11 @@ This project repo will stay active and once some work on pipelines and deploymen
 - ### Inference with spot-checking specific summaries from the dataset, and new unseen texts from news of the day
 - ### Identify the hyperparameters and parameters we would want to adjust for a second round of fine-tuning, given the results of the first fine tuning with my dataset
 
-## General Week 22-24 Structure:
-- ### Week 22-23
+## General Structure:
+- ### Phase 1
     - Decided on text summarisation (possibly legal document, then confirmed to news summarisation for phase 1), online literature review of some papers (see background-research.md).
     - Found the dataset (link below), practiced tokenization and preprocessing manually using NLP tools (NLTK, remove stopwords etc). Saved preprocessed data
-- ### Week 23-24
+- ### Phase 2
     - Selected T5-small model for GPU/RAM considerations, first run with just 25% of the data, preprocessing from the raw text (I understand that you need to use the LLM's own tokenizer in almost all cases, so my manual preprocessing wouldn't be appropriate here).
     - Ran the preprocessed, tokenized data in T5-small, interpret ROUGE score results, manually inspect some outputs and inference with new unseen inputs.
     - Considered hyperparameter changes to improve performance (output min length, prompt engineering the input for the T5, learning rate
