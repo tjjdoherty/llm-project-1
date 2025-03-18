@@ -1,11 +1,10 @@
 # llm-project
 
 ## Jan 2025 Update
-This project repo will stay active and once some work on pipelines and deployment is done, I will return to use multiple models in an ensemble method - one LLM model, staying with T5 for summary generation and another LLM model to compare the summary results. The Ensemble could be:
+This project repo will stay active and once some work on pipelines and deployment is done, I will return to use multiple models in an ensemble and stacking method: T5 plus one new LLM for summary generation and another LLM model to compare the summary results. The Ensemble could be:
 
-- One model (T5) generates the summary
-- Another model (e.g., BLEURT, BERTScore, or a custom LLM) evaluates the quality of the generated summary against the human expert summary
-- By combining the strengths of these two models, you effectively form an ensemble
+- T5 and a different model (TBC) generate the summary independently of one another.
+- Another model (e.g. BLEURT, BERTScore, or a custom LLM) evaluates the quality of the generated summaries against the human expert summary.
 
 ## Project Task: Summarising News Articles: 
 - ### Given a training set of news reports that vary in style and length, use an LLM (T5-small) to produce a summary of the long form text
