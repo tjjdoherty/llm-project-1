@@ -4,20 +4,20 @@
 Key Takeaways:
 - **Large Documents are hard to summarise due to Context Length Limitation**. There are **limited token inputs** for most models, most are around 4.1k - 16.4k (depending on model, as of August 2023), about 6 - 26 pages. If the input document creates more tokens that the model limit allows, sections need to be removed before the model can process it. 
     - This is referred to as the **context**, e.g. **8k or 4k context**.
-    - Some models have much larger limits e.g. 32k, Clause v2 has a 100k token limit but it doesn't actually change performance (see below).
+    - Some models have much larger limits e.g. 32k. Claude v2 has a 100k token limit, but it doesn't improve performance much. See below.
 
 
 - **Currently, all model performance degrades as the amount of text you provide to them increases**.
     - This is **Particularly true in the middle of text** [Lost in the Middle, Nov 2023](https://arxiv.org/abs/2307.03172) "We observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and signiciatly degrades when models must access information in the middle of long contexts, **even for explicitly long-context models**". So optimal performance in current models meant moderating the model input with each API call.
     - See images below: GPT 3.5 and Claude 1.3 9k and 100k both degrade nearly identically. Retrieval of information is better in the beginning and end of the context window.
-    - It's very noticeable that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical to their 'lightweight' models.** All the models have better performance at the beginning and end of the context window, and a degradation in the middle. Larger context models are more convenient but optimal performance involves smaller chunks of information.
+    - It's very noticeable that **even when these models have substantially larger token limits (GPT 4k or 16k, Claude 8k or 100k) their performances are nearly identical to their 'lightweight' models.** All the models have better performance at the beginning and end, with degradation in the middle. Larger context models are more convenient, but optimal performance involves smaller chunks of information.
 
     ![Accuracy vs Number of Documents in Input Context, by Model](images/image.png)
     ![Document position vs Accuracy of answer retrieval](images/image-1.png)
 
 - **LLMs struggle with domain specificity and are "reality agnostic"**.
-    - E.g. ChatGPT is just probabilistically generating the next word you expect, so when LARGE language model training is likely to come from general purpose sources (the LARGE majority of its training data), it's not reasonable to expect the highest probability output to be for the niche expert view that requires domain specific or interdisciplinary knowledge.
-    - This **can be employed as a strategy in domain-specific uses**. e.g. Patent law - you can't expect a model to produce language to defend your unique patent but you could see the claim language of similar articles, or a generalised version of a claim you might want to distinguish from. In other words, if you are going for uniqueness, use the model as a norm to deviate from. 
+    - ChatGPT is just probabilistically generating word-by-word. It follows that when LARGE language model training material is mostly coming from general purpose sources (the LARGE majority of its training data), it's not reasonable to expect the highest probability output to be for the niche expert view that requires domain specific or interdisciplinary knowledge.
+    - This **can be employed as a strategy in domain-specific uses. e.g. Patent law**. You can't expect a model to produce language to defend your unique patent but you could see the claim language of similar articles, or a generalised version of a claim you might want to distinguish from. In other words, if you are going for uniqueness, use the model as a norm to deviate from. 
 
 
 - **Get Around Context Limits**
